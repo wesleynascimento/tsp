@@ -29,18 +29,3 @@ def fake_thread():
     #make a simple threading
     for x in range(1, random.randint(1,1000)):
         pass
-
-cont=0
-arq=open("numAleatorios.txt","w")
-lista=[]
-for x in range(0, 1000):
-    lista.append(rand_num())
-    #print(rand_num())
-
-for i in lista:
-    arq.write(str(i)+" ")
-    cont+=1
-    if cont==100:
-        arq.write("\n")
-        cont=0
-arq.close()

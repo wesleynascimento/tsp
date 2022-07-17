@@ -1,14 +1,40 @@
-from email import parser
-from black import main
 import sys
+
+from email import parser
+from utils import read_distance_matrix
 from argparse import ArgumentParser
 from rand import rand_num
 
+def initial_point(data):
+    total_city = len(data)
+    return rand_num(total_city)
 
-def read_distance_matrix(filename):
-    with open(filename, 'r') as f:
-        l = [[float(num) for num in line.split('  ')] for line in f]
-    return l
+def ranking_closest(distance_matrix, tour):
+    closest = 9999
+    if len(tour) == 0:
+        last_city = 1
+        tour.append(1)
+    else:
+        last_city = tour[-1]
+
+    for idx, i in enumerate(distance_matrix[last_city - 1]):
+        if (idx + 1) not in tour and i != 0:
+            if i < closest:
+                closest = i
+                next_city = idx
+    try:
+        tour.append(next_city + 1)
+    except:
+        print('---- fim')
+    return tour
+
+def grasp(distance_matrix):
+    tour = []
+    print('---- Montando solução')
+    for i in range(0,5):
+        print('---- Tour atual{}'.format(tour))
+        tour = ranking_closest(distance_matrix,tour)
+
 
 
 if __name__ == '__main__':
@@ -19,4 +45,6 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     m = read_distance_matrix(args.file)
-    print(m)
+    grasp(m)
+    #initial_city = initial_point(m)
+    #print(initial_city)
