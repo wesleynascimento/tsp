@@ -9,6 +9,15 @@ def initial_point(data):
     total_city = len(data)
     return rand_num(total_city)
 
+def get_total_distance(distance_matrix, tour):
+    total_distance = 0 
+    for idx, i in enumerate(tour):
+        try:
+            total_distance += distance_matrix[i-1][tour[idx+1]-1]
+        except:
+            pass
+    return total_distance
+
 def ranking_closest(distance_matrix, tour):
     closest = 9999
     if len(tour) == 0:
@@ -34,6 +43,7 @@ def grasp(distance_matrix):
     for i in range(0,5):
         print('---- Tour atual{}'.format(tour))
         tour = ranking_closest(distance_matrix,tour)
+    print(get_total_distance(distance_matrix,tour))
 
 
 
