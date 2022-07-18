@@ -1,24 +1,11 @@
 import sys
-
+import copy
 from email import parser
-from utils import read_distance_matrix
+from utils import *
 from argparse import ArgumentParser
 from rand import rand_num
 
-def initial_point(data):
-    total_city = len(data)
-    return rand_num(total_city)
-
-def get_total_distance(distance_matrix, tour):
-    total_distance = 0 
-    for idx, i in enumerate(tour):
-        try:
-            total_distance += distance_matrix[i-1][tour[idx+1]-1]
-        except:
-            pass
-    return total_distance
-
-def ranking_closest(distance_matrix, tour):
+def greedy_closest(distance_matrix, tour):
     closest = 9999
     if len(tour) == 0:
         last_city = 1
@@ -37,13 +24,34 @@ def ranking_closest(distance_matrix, tour):
         print('---- fim')
     return tour
 
-def grasp(distance_matrix):
+def localsearch_2opt(distance_matrix, city_tour):
+    tour = copy.deepcopy(city_tour)
+    best_route = copy.deepcopy(tour)
+    seed = copy.deepcopy(tour)  
+    for i in range(0, len(tour[0])-2):
+        for j in range(i+1, len(tour[0])-1):
+            best_route[0][i:j+1] = list(reversed(best_route[0][i:j+1]))
+            #best_route[0][-1] = best_route[0][0]
+            best_route[1] = get_total_distance(distance_matrix,best_route[0])
+            if(best_route[1] < tour[1]):
+                tour[1] = copy.deepcopy(best_route[1])
+                for n in range(0, len(tour[0])): 
+                    tour[0][n] = best_route[0][n]
+            best_route = copy.deepcopy(seed)
+    return tour
+
+def grasp(distance_matrix, n):
     tour = []
+    city_tour = []
     print('---- Montando solução')
-    for i in range(0,5):
+    for i in range(0,n):
         print('---- Tour atual{}'.format(tour))
-        tour = ranking_closest(distance_matrix,tour)
-    print(get_total_distance(distance_matrix,tour))
+        tour = greedy_closest(distance_matrix,tour)
+    city_tour.append(tour)
+    city_tour.append(0)
+    city_tour[1] = (get_total_distance(distance_matrix,city_tour[0]))
+    best_route = localsearch_2opt(distance_matrix,city_tour)
+    print(best_route)
 
 
 
@@ -55,6 +63,4 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     m = read_distance_matrix(args.file)
-    grasp(m)
-    #initial_city = initial_point(m)
-    #print(initial_city)
+    grasp(m, 5)
