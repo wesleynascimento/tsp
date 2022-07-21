@@ -23,6 +23,57 @@ def greedy_closest(distance_matrix, tour):
     except:
         print('---- fim')
     return tour
+def cheapestInsertion(distance_matrix):
+    dista = distance_matrix
+    tour = []
+    dTour = 0
+    t1, t2, t3, dTour = tInicial(dista)
+    tour.append(t1)
+    tour.append(t2)
+    tour.append(t3)
+    listaMenor = []
+    l=[]
+    while len(tour) != len(dista):
+        tab = caminho(tour)
+        for x in range(len(dista)):
+            if x not in tour and x not in listaMenor:
+                for i in tab:
+                    #print(i[0],"--",x,"--",i[1],)
+                    id, res = distanciaCheapest(i[0], i[1], x, dista)
+
+                    l.append(i[0])
+                    l.append(id)
+                    l.append(i[1])
+                    l.append(res)
+                    if len(l)!=0:
+                        #print(l)
+                        listaMenor.append(l)
+                        l=[]
+        #print(listaMenor)
+        n,m,id,dis=menorDistanciaVet(listaMenor)
+        #print(n,m,id,"-----",dis)
+        tour=inserirTour(n,m,id,tour)
+        dTour+=dis
+        listaMenor=[]
+        print(tour)
+        print(dTour)
+        print("------")
+    return tour
+
+def hillClimbing(distMatriz,solucao):
+    atualSolucao = solucao
+    atualRotaTamanho = tamanhoRota(distMatriz, atualSolucao)
+    vizinhos = criandoVizinhos(atualSolucao)
+    mVizinho, mVizinhoTamanhoRota = melhorVizinho(distMatriz, vizinhos)
+
+    while mVizinhoTamanhoRota < atualRotaTamanho:
+        atualSolucao = mVizinho
+        atualRotaTamanho = mVizinhoTamanhoRota
+        vizinhos = criandoVizinhos(atualSolucao)
+        mVizinho, mVizinhoTamanhoRota = melhorVizinho(distMatriz, vizinhos)
+
+    return atualSolucao, atualRotaTamanho
+
 
 def localsearch_2opt(distance_matrix, city_tour):
     tour = copy.deepcopy(city_tour)
@@ -53,7 +104,18 @@ def grasp(distance_matrix, n):
     best_route = localsearch_2opt(distance_matrix,city_tour)
     print(best_route)
 
-
+def grasp2(distance_matrix, n):
+    tour = []
+    city_tour = []
+    print('---- Montando solução')
+    for i in range(0,n):
+        print('---- Tour atual{}'.format(tour))
+        tour = cheapestInsertion(distance_matrix)
+    city_tour.append(tour)
+    city_tour.append(0)
+    city_tour[1] = (get_total_distance(distance_matrix,city_tour[0]))
+    best_route = hillClimbing(distance_matrix,city_tour)
+    print(best_route)
 
 if __name__ == '__main__':
     #arg parser
@@ -62,5 +124,7 @@ if __name__ == '__main__':
         '-f', '--file', help='path to file of distance matrix', metavar='PATH', required=True)
     args = parser.parse_args()
 
-    m = read_distance_matrix(args.file)
-    grasp(m, 5)
+    #m = read_distance_matrix(args.file)
+    #grasp(m, 5)
+    mat=pegaMatriz(args.file)
+    grasp2(mat, 6)
