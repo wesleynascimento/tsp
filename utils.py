@@ -2,7 +2,7 @@ from rand import rand_num
 
 def read_distance_matrix(filename):
     with open(filename, 'r') as f:
-        l = [[float(num) for num in line.split('  ')] for line in f]
+        l = [[float(num) for num in line.split()] for line in f]
     return l
 
 def initial_point(data):
