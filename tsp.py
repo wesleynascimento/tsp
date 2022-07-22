@@ -94,7 +94,7 @@ def localsearch_2opt(distance_matrix, city_tour):
     return tour
 
 def grasp(distance_matrix, n, iterations= 50):
-    tour = []
+    seed = []
     city_tour = []
     best_route = [[9999],9999] # estrutura é [[lista de cidades], distancia total]
     
@@ -102,8 +102,8 @@ def grasp(distance_matrix, n, iterations= 50):
     for count in range(0,iterations): # Multistart
         # construtor
         for i in range(0,n):
-            tour = greedy_closest(distance_matrix,tour)
-        city_tour.append(tour)
+            seed = greedy_closest(distance_matrix,seed)
+        city_tour.append(seed)
         city_tour.append((get_total_distance(distance_matrix,city_tour[0])))
         actual_best_route = localsearch_2opt(distance_matrix,city_tour)
         if actual_best_route[1] < best_route[1]:
@@ -111,7 +111,7 @@ def grasp(distance_matrix, n, iterations= 50):
         #reset tour
         print("iteracao =", count, "| distancia total =", best_route[1])
         actual_best_route = []
-        tour = []
+        seed = []
 
 def grasp2(distance_matrix, n):
     tour = []
