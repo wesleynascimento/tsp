@@ -1,29 +1,44 @@
 import sys
 import copy
+import random
 from email import parser
 from utils import *
 from argparse import ArgumentParser
 from rand import rand_num
 
-def greedy_closest(distance_matrix, tour):
+def ranking(distance_matrix, city_tour, city=1, rcl=25):
+    distance_list = copy.deepcopy(distance_matrix[city-1])
+    tour_ = copy.deepcopy(city_tour)
+    tour_.sort(reverse=True)
+    for item in tour_:
+        distance_list.pop(item-1)
+    distance_list.sort()
+    if 0 in distance_list:
+        distance_list.remove(0)
+    return distance_list[:rcl]
+
+def seed_function(distance_matrix, tour, rcl_limiter=25):
     closest = 9999
     if len(tour) == 0:
-        #last_city = rand_num(len(distance_matrix[0]))
-        last_city = 1
+        last_city = rand_num(len(distance_matrix[0]))
         tour.append(last_city)
     else:
         last_city = tour[-1]
-
-    for idx, i in enumerate(distance_matrix[last_city - 1]):
-        if (idx + 1) not in tour and i != 0:
-            if i < closest:
-                closest = i
-                next_city = idx
-    try:
-        tour.append(next_city + 1)
-    except:
-        pass
-    return tour
+    rcl = ranking(distance_matrix, tour, tour[-1], rcl_limiter)
+    for k in range(0,len(distance_matrix[0])):
+        if len(rcl) != 0:
+            next_city_d = random.choice(rcl)
+            for idx,item in enumerate(distance_matrix[last_city - 1]):
+                if item == next_city_d and (idx + 1) not in tour:
+                    next_city = idx + 1
+            try:
+                tour.append(next_city)
+                rcl = ranking(distance_matrix, tour, tour[-1], rcl_limiter)
+                last_city = tour[-1]
+            except:
+                pass
+        else:
+            return tour
 
 def cheapestInsertion(distance_matrix):
     dista = distance_matrix
@@ -93,7 +108,7 @@ def localsearch_2opt(distance_matrix, city_tour):
             best_route = copy.deepcopy(seed)
     return tour
 
-def grasp(distance_matrix, n, iterations= 50):
+def grasp(distance_matrix, iterations= 50, rcl=10):
     seed = []
     city_tour = []
     best_route = [[9999],9999] # estrutura é [[lista de cidades], distancia total]
@@ -101,8 +116,7 @@ def grasp(distance_matrix, n, iterations= 50):
     print('---- Montando solução')
     for count in range(0,iterations): # Multistart
         # construtor
-        for i in range(0,n):
-            seed = greedy_closest(distance_matrix,seed)
+        seed = seed_function(distance_matrix,seed,rcl)
         city_tour.append(seed)
         city_tour.append((get_total_distance(distance_matrix,city_tour[0])))
         actual_best_route = localsearch_2opt(distance_matrix,city_tour)
@@ -110,6 +124,7 @@ def grasp(distance_matrix, n, iterations= 50):
             best_route = copy.deepcopy(actual_best_route)
         #reset tour
         print("iteracao =", count, "| distancia total =", best_route[1])
+        city_tour = []
         actual_best_route = []
         seed = []
 
@@ -134,7 +149,6 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     m = read_distance_matrix(args.file)
-    n = len(m[0])
-    grasp(m, n)
+    grasp(m, 100000, 3)
     #mat=pegaMatriz(args.file)
     #grasp2(mat, 6)
