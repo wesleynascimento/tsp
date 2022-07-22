@@ -96,7 +96,7 @@ def localsearch_2opt(distance_matrix, city_tour):
 def grasp(distance_matrix, n, iterations= 50):
     tour = []
     city_tour = []
-    best_route = [[9999],9999]
+    best_route = [[9999],9999] # estrutura é [[lista de cidades], distancia total]
     
     print('---- Montando solução')
     for count in range(0,iterations): # Multistart
@@ -109,7 +109,7 @@ def grasp(distance_matrix, n, iterations= 50):
         if actual_best_route[1] < best_route[1]:
             best_route = copy.deepcopy(actual_best_route)
         #reset tour
-        print("Iteration =", count, "-> Distance =", best_route[1])
+        print("iteracao =", count, "| distancia total =", best_route[1])
         actual_best_route = []
         tour = []
 
