@@ -78,19 +78,36 @@ def cheapestInsertion(distance_matrix):
         print("------")
     return tour
 
-def hillClimbing(distMatriz,solucao):
-    atualSolucao = solucao
-    atualRotaTamanho = tamanhoRota(distMatriz, atualSolucao)
-    vizinhos = criandoVizinhos(atualSolucao)
-    mVizinho, mVizinhoTamanhoRota = melhorVizinho(distMatriz, vizinhos)
+def hillClimbing(distaMatriz):
+    atualSolucao = cheapestInsertion(distaMatriz)
+    atualTamanhoRota = get_total_distance(distaMatriz, atualSolucao)
+    vizinhos = funcVizinhos(atualSolucao)
+    melhorVizinho, melhorVizinhoTamanhoRota = funcMelhorVizinho(distaMatriz, vizinhos)
 
-    while mVizinhoTamanhoRota < atualRotaTamanho:
-        atualSolucao = mVizinho
-        atualRotaTamanho = mVizinhoTamanhoRota
-        vizinhos = criandoVizinhos(atualSolucao)
-        mVizinho, mVizinhoTamanhoRota = melhorVizinho(distMatriz, vizinhos)
+    while melhorVizinhoTamanhoRota < atualTamanhoRota:
+        atualSolucao = melhorVizinho
+        atualTamanhoRota = melhorVizinhoTamanhoRota
+        vizinhos = funcVizinhos(atualSolucao)
+        melhorVizinho, melhorVizinhoTamanhoRota = funcMelhorVizinho(distaMatriz, vizinhos)
 
-    return atualSolucao, atualRotaTamanho
+    return atualSolucao, atualTamanhoRota
+
+def heuristicaCriada(distaMatriz,n):
+    melhorDis=99999990
+    melhorRota=[]
+    rotas=[]
+    tour=[]
+    for i in range(n):
+        cam,dis=hillClimbing(distaMatriz)
+        tour.append(cam)
+        tour.append(dis)
+        rotas.append(tour)
+        if dis<melhorDis:
+            melhorDis=dis
+            melhorRota=cam
+        tour=[]
+        print("iteracao =", i, "| distancia total =", melhorDis)
+    print(melhorRota)
 
 
 def localsearch_2opt(distance_matrix, city_tour):
@@ -156,3 +173,10 @@ if __name__ == '__main__':
     print('Melhor iteração foi em -> {}'.format(it))
     #mat=pegaMatriz(args.file)
     #grasp2(mat, 6)
+    #m = read_distance_matrix(args.file)
+    #grasp(m, 5)
+    mat=pegaMatriz(args.file)
+    #cheapestInsertion(mat)
+    #grasp2(mat, 5)
+    #print(hillClimbing(mat))
+    heuristicaCriada(mat,1000)
