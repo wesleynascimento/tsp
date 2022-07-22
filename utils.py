@@ -52,13 +52,10 @@ def inserirTour(i,j,k,tour):
     corte1 = tour.index(i)
     l1 = tour[:corte1 + 1]
     l2 = tour[corte1 + 1:]
-    #print(l1)
-    #print(l2)
     l3 = []
     l3 = l1
     l3.append(k)
     l3 += l2
-    #print(l3)
     return l3
 
 def tInicial(mat):
@@ -95,34 +92,27 @@ def pegaMatriz(nome):
                 num=""
             elif j!="":
                 numInt=int(float(num))
-                #print(num)
                 lin.append(numInt)
                 num=""
         mat.append(lin)
     return mat
 
-def tamanhoRota(distMatriz, solucao):
-    tamRota = 0
-    for i in range(len(solucao)):
-        tamRota += distMatriz[solucao[i - 1]][solucao[i]]
-    return tamRota
-
-def criandoVizinhos(solucao):
+def funcVizinhos(solucao):
     vizinhos = []
     for i in range(len(solucao)):
         for j in range(i + 1, len(solucao)):
-            vizinhos = solucao.copy()
-            vizinhos[i] = solucao[j]
-            vizinhos[j] = solucao[i]
-            vizinhos.append(vizinhos)
+            vizinho = solucao.copy()
+            vizinho[i] = solucao[j]
+            vizinho[j] = solucao[i]
+            vizinhos.append(vizinho)
     return vizinhos
 
-def melhorVizinho(distMatriz, vizinhos):
-    melhorRota = tamanhoRota(distMatriz, vizinhos[0])
+def funcMelhorVizinho(distMatriz, vizinhos):
+    melhorRotaTamanho = get_total_distance(distMatriz, vizinhos[0])
     melhorVizinho = vizinhos[0]
-    for x in vizinhos:
-        atualRota = tamanhoRota(distMatriz, x)
-        if atualRota < melhorRota:
-            melhorRota = atualRota
-            melhorVizinho = x
-    return melhorVizinho, melhorRota
+    for vizinho in vizinhos:
+        atualTamanhoRota = get_total_distance(distMatriz, vizinho)
+        if atualTamanhoRota < melhorRotaTamanho:
+            melhorRotaTamanho = atualTamanhoRota
+            melhorVizinho = vizinho
+    return melhorVizinho, melhorRotaTamanho
