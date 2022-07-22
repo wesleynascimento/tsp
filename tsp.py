@@ -20,7 +20,8 @@ def ranking(distance_matrix, city_tour, city=1, rcl=25):
 def seed_function(distance_matrix, tour, rcl_limiter=25):
     closest = 9999
     if len(tour) == 0:
-        last_city = rand_num(len(distance_matrix[0]))
+        #last_city = rand_num(len(distance_matrix[0]))
+        last_city = 1
         tour.append(last_city)
     else:
         last_city = tour[-1]
@@ -99,7 +100,6 @@ def localsearch_2opt(distance_matrix, city_tour):
     for i in range(0, len(tour[0])-2):
         for j in range(i+1, len(tour[0])-1):
             best_route[0][i:j+1] = list(reversed(best_route[0][i:j+1]))
-            #best_route[0][-1] = best_route[0][0]
             best_route[1] = get_total_distance(distance_matrix,best_route[0])
             if(best_route[1] < tour[1]):
                 tour[1] = copy.deepcopy(best_route[1])
@@ -112,7 +112,7 @@ def grasp(distance_matrix, iterations= 50, rcl=10):
     seed = []
     city_tour = []
     best_route = [[9999],9999] # estrutura é [[lista de cidades], distancia total]
-    
+    best_iteration = 0
     print('---- Montando solução')
     for count in range(0,iterations): # Multistart
         # construtor
@@ -122,11 +122,14 @@ def grasp(distance_matrix, iterations= 50, rcl=10):
         actual_best_route = localsearch_2opt(distance_matrix,city_tour)
         if actual_best_route[1] < best_route[1]:
             best_route = copy.deepcopy(actual_best_route)
+            best_iteration = count
         #reset tour
         print("iteracao =", count, "| distancia total =", best_route[1])
+        #print(best_route[0])
         city_tour = []
         actual_best_route = []
         seed = []
+    return best_iteration, best_route
 
 def grasp2(distance_matrix, n):
     tour = []
@@ -149,6 +152,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     m = read_distance_matrix(args.file)
-    grasp(m, 100000, 3)
+    it, route = grasp(m, 7000, 3)
+    print('Melhor iteração foi em -> {}'.format(it))
     #mat=pegaMatriz(args.file)
     #grasp2(mat, 6)
