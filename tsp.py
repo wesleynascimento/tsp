@@ -72,9 +72,9 @@ def cheapestInsertion(distance_matrix):
         tour=inserirTour(n,m,id,tour)
         dTour+=dis
         listaMenor=[]
-        print(tour)
-        print(dTour)
-        print("------")
+        #print(tour)
+        #print(dTour)
+        #print("------")
     return tour
 
 def hillClimbing(distaMatriz):
@@ -106,6 +106,7 @@ def heuristicaCriada(distaMatriz,n):
             melhorRota=cam
         tour=[]
         print("iteracao =", i, "| distancia total =", melhorDis)
+
     print(melhorRota)
 
 
@@ -145,18 +146,7 @@ def grasp(distance_matrix, iterations= 50, rcl=10):
         actual_best_route = []
         seed = []
 
-def grasp2(distance_matrix, n):
-    tour = []
-    city_tour = []
-    print('---- Montando solução')
-    for i in range(0,n):
-        print('---- Tour atual{}'.format(tour))
-        tour = cheapestInsertion(distance_matrix)
-    city_tour.append(tour)
-    city_tour.append(0)
-    city_tour[1] = (get_total_distance(distance_matrix,city_tour[0]))
-    best_route = hillClimbing(distance_matrix,city_tour)
-    print(best_route)
+
 
 if __name__ == '__main__':
     #arg parser
@@ -175,4 +165,4 @@ if __name__ == '__main__':
     #cheapestInsertion(mat)
     #grasp2(mat, 5)
     #print(hillClimbing(mat))
-    heuristicaCriada(mat,1000)
+    heuristicaCriada(mat,5000)
